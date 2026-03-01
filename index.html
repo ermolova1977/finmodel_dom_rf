@@ -1,0 +1,2981 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовая модель жилого комплекса</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #0054a6;
+            --secondary-color: #003d7a;
+            --accent-color: #ff6b00;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 20px 0;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            font-weight: bold;
+            background-color: white;
+            color: var(--primary-color);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .project-name-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 4px;
+            min-width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .project-name-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .project-date {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .project-date input {
+            background: transparent;
+            border: none;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 2px 5px;
+            font-size: 14px;
+        }
+        
+        .scenario-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .scenario-btn {
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-btn.active {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        .scenario-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Основная структура */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+        }
+        
+        /* Панель управления */
+        .control-panel {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        
+        .control-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .control-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .control-panel::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .control-section:last-child {
+            border-bottom: none;
+        }
+        
+        .control-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-item {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .control-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e9ecef;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        input[type="number"], input[type="date"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-with-unit input {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .unit {
+            font-size: 14px;
+            color: #666;
+            min-width: 50px;
+        }
+        
+        /* Площади продаж - увеличенные поля */
+        .areas-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .area-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .area-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .area-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .area-controls .input-with-unit {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .area-controls .input-with-unit input {
+            width: 100%;
+        }
+        
+        /* Структура себестоимости */
+        .cost-structure {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .cost-structure::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .cost-structure::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .cost-structure::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .cost-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            padding: 10px 0;
+            font-size: 13px;
+            border-bottom: 1px dashed #eee;
+            align-items: center;
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cost-amount {
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 90px;
+        }
+        
+        .cost-percent {
+            text-align: right;
+            min-width: 40px;
+            color: #666;
+        }
+        
+        .cost-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        
+        .cost-inputs input {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .cost-total {
+            font-weight: 700;
+            color: var(--secondary-color);
+            background-color: #f0f7ff;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        /* Основное содержимое */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: #d0d7e2;
+        }
+        
+        /* Контент вкладок */
+        .tab-content {
+            display: none;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        /* Панели с ключевыми показателями */
+        .kpi-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-panel {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .kpi-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .kpi-unit {
+            font-size: 14px;
+            color: #888;
+            margin-left: 5px;
+        }
+        
+        /* Таблицы */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        
+        .data-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 13px;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        .table-section {
+            background-color: #f8f9fa;
+            font-weight: 700;
+        }
+        
+        /* Графики */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .chart-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .chart-placeholder {
+            height: 250px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        /* Календарь проекта */
+        .project-timeline {
+            margin-top: 30px;
+        }
+        
+        .timeline-visual {
+            display: flex;
+            height: 80px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            position: relative;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .timeline-phase {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .phase-preproject {
+            background-color: #6c757d;
+        }
+        
+        .phase-design {
+            background-color: #17a2b8;
+        }
+        
+        .phase-construction {
+            background-color: #28a745;
+        }
+        
+        .phase-sales {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .phase-operation {
+            background-color: #007bff;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: var(--danger-color);
+        }
+        
+        .timeline-marker-label {
+            position: absolute;
+            top: -25px;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--danger-color);
+            white-space: nowrap;
+        }
+        
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            margin-top: 30px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* Кнопки */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Налоговые параметры */
+        .tax-params {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        /* Финансирование */
+        .financing-summary {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .financing-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .financing-item.total {
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+            margin-top: 8px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        /* CAPEX распределение */
+        .capex-distribution {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .capex-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        /* Собственное участие - двойной ввод */
+        .equity-input-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .equity-input-group input[type="range"] {
+            grid-column: 1 / span 2;
+        }
+        
+        .equity-manual-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .equity-manual-input input {
+            width: 80px;
+            text-align: center;
+        }
+        
+        /* Процентные ставки */
+        .interest-rates-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .interest-rates-table th,
+        .interest-rates-table td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        
+        .interest-rates-table th {
+            background-color: #f0f7ff;
+            font-weight: 600;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1400px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                position: static;
+                max-height: none;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .tax-params {
+                grid-template-columns: 1fr;
+            }
+            
+            .area-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .project-info {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                width: 100%;
+            }
+            
+            .project-name-input {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-panels {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100%;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .financing-summary {
+                padding: 10px;
+            }
+            
+            .equity-input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Информационные блоки */
+        .info-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .info-box p {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .info-box strong {
+            color: var(--primary-color);
+        }
+        
+        /* Итоги по площадям */
+        .areas-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .summary-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Вкладка процентов */
+        .interest-tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .interest-table-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .monthly-details-table {
+            font-size: 11px;
+        }
+        
+        .monthly-details-table th,
+        .monthly-details-table td {
+            padding: 4px 6px;
+        }
+        
+        /* Суммы финансирования */
+        .financing-amounts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .amount-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .amount-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .amount-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">ФМ</div>
+                    <div class="logo-text">
+                        <h1>Финансовая модель жилого комплекса</h1>
+                        <p>Интерактивная модель проекта</p>
+                    </div>
+                    <div class="project-info">
+                        <input type="text" class="project-name-input" id="project-name" placeholder="Введите название проекта" value="Жилой комплекс">
+                        <div class="project-date">
+                            <span>Дата составления:</span>
+                            <input type="date" id="project-date" value="2025-10-15">
+                        </div>
+                    </div>
+                </div>
+                <div class="scenario-selector">
+                    <div class="scenario-btn active" data-scenario="base">Базовый сценарий</div>
+                    <div class="scenario-btn" data-scenario="positive">Позитивный</div>
+                    <div class="scenario-btn" data-scenario="negative">Негативный</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-layout">
+            <!-- Панель управления -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>Финансирование проекта</span>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Собственное участие</span>
+                            <span class="control-value" id="equity-value">30%</span>
+                        </div>
+                        <div class="equity-input-group">
+                            <input type="range" id="equity-slider" min="0" max="50" step="1" value="30">
+                            <div class="equity-manual-input">
+                                <input type="number" id="equity-input" min="0" max="50" step="1" value="30" style="width: 70px;">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="financing-summary">
+                        <div class="financing-item">
+                            <span>Собственные средства:</span>
+                            <span id="equity-amount">831 792</span>
+                            <span>тыс. руб.</span>
+                        </div>
+                        <div class="financing-item">
+                            <span>Банковское финансирование:</span>
+                            <span id="bank-financing-percent">70%</span>
+                        </div>
+                        <div class="financing-item">
+                            <span>Сумма финансирования:</span>
+                            <span id="bank-financing-amount">1 940 848</span>
+                            <span>тыс. руб.</span>
+                        </div>
+                        <div class="financing-item total">
+                            <span>Всего финансирование:</span>
+                            <span id="total-financing-amount">2 772 640</span>
+                            <span>тыс. руб.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Стоимость стр-ва 1 кв.м</span>
+                            <span class="control-value" id="cost-per-m2-value">110</span>
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" id="cost-per-m2" min="80" max="200" step="5" value="110">
+                            <span class="unit">тыс. руб.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Резерв (% от CAPEX без земли)</span>
+                            <span class="control-value" id="reserve-value">5%</span>
+                        </div>
+                        <input type="range" id="reserve-slider" min="0" max="15" step="0.5" value="5">
+                    </div>
+                    
+                    <div class="info-box">
+                        <p><strong>CAPEX проекта:</strong> <span id="calculated-capex">2 772 640</span> тыс. руб.</p>
+                        <p><strong>Расчетная выручка:</strong> <span id="calculated-total-revenue">4 704 820</span> тыс. руб.</p>
+                        <p><strong>Маржа проекта:</strong> <span id="calculated-margin">41.0%</span></p>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>Площади для продажи</span>
+                    </div>
+                    
+                    <div class="areas-grid">
+                        <div class="area-item">
+                            <div class="area-title">Жилая площадь (квартиры)</div>
+                            <div class="area-controls">
+                                <div class="input-with-unit">
+                                    <span class="unit">Площадь:</span>
+                                    <input type="number" id="residential-area" min="10000" max="100000" step="100" value="29846">
+                                    <span class="unit">кв.м</span>
+                                </div>
+                                <div class="input-with-unit">
+                                    <span class="unit">Цена:</span>
+                                    <input type="number" id="residential-price" min="100" max="500" step="10" value="125">
+                                    <span class="unit">тыс. руб./кв.м</span>
+                                </div>
+                                <div class="summary-label">Без НДС (льгота)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="area-item">
+                            <div class="area-title">Коммерческие помещения</div>
+                            <div class="area-controls">
+                                <div class="input-with-unit">
+                                    <span class="unit">Площадь:</span>
+                                    <input type="number" id="commercial-area" min="1000" max="20000" step="100" value="6950">
+                                    <span class="unit">кв.м</span>
+                                </div>
+                                <div class="input-with-unit">
+                                    <span class="unit">Цена:</span>
+                                    <input type="number" id="commercial-price" min="100" max="500" step="10" value="90">
+                                    <span class="unit">тыс. руб./кв.м</span>
+                                </div>
+                                <div class="summary-label">Без НДС (льгота)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="area-item">
+                            <div class="area-title">Машино-места</div>
+                            <div class="area-controls">
+                                <div class="input-with-unit">
+                                    <span class="unit">Количество:</span>
+                                    <input type="number" id="parking-count" min="100" max="1000" step="10" value="467">
+                                    <span class="unit">шт.</span>
+                                </div>
+                                <div class="input-with-unit">
+                                    <span class="unit">Цена:</span>
+                                    <input type="number" id="parking-price" min="300" max="1000" step="50" value="400">
+                                    <span class="unit">тыс. руб./шт.</span>
+                                </div>
+                                <div class="summary-label">Без НДС (льгота)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="area-item">
+                            <div class="area-title">Кладовые помещения</div>
+                            <div class="area-controls">
+                                <div class="input-with-unit">
+                                    <span class="unit">Количество:</span>
+                                    <input type="number" id="storage-count" min="0" max="500" step="10" value="0">
+                                    <span class="unit">шт.</span>
+                                </div>
+                                <div class="input-with-unit">
+                                    <span class="unit">Цена:</span>
+                                    <input type="number" id="storage-price" min="100" max="500" step="10" value="0">
+                                    <span class="unit">тыс. руб./шт.</span>
+                                </div>
+                                <div class="summary-label">Без НДС (льгота)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="areas-summary">
+                        <div class="summary-item">
+                            <div class="summary-value" id="total-area-sum">36 796</div>
+                            <div class="summary-label">Общая площадь, кв.м</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="total-units-sum">467</div>
+                            <div class="summary-label">Единиц (парк+клад)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box" style="margin-top: 10px; font-size: 12px;">
+                        <p><strong>Примечание:</strong> Все объекты в жилом доме освобождены от НДС согласно льготе</p>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>Процентные ставки</span>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Ключевая ставка ЦБ</span>
+                            <span class="control-value" id="key-rate-value">10.0%</span>
+                        </div>
+                        <input type="range" id="key-rate-slider" min="5" max="20" step="0.1" value="10">
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Налог на прибыль</span>
+                            <span class="control-value" id="profit-tax-value">25%</span>
+                        </div>
+                        <input type="range" id="profit-tax-slider" min="15" max="35" step="1" value="25">
+                    </div>
+                    
+                    <div class="info-box" style="margin-top: 10px; font-size: 12px;">
+                        <p><strong>Базовая ставка:</strong> Ключевая + 5.92% (до 30.01.2028), затем +4.8%</p>
+                        <p><strong>Специальные ставки I(v) и I(v2)</strong> применяются по договору</p>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>Календарь проекта</span>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Старт проекта</span>
+                        </div>
+                        <input type="date" id="start-date" value="2025-10-01">
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Начало строительства</span>
+                        </div>
+                        <input type="date" id="construction-start" value="2026-02-01">
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Ввод в эксплуатацию</span>
+                        </div>
+                        <input type="date" id="operation-start" value="2029-06-30">
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Длительность стр-ва (мес.)</span>
+                            <span class="control-value" id="construction-months">41</span>
+                        </div>
+                        <input type="range" id="construction-months-slider" min="24" max="60" step="1" value="41">
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>Параметры продаж</span>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Продажи во время стр-ва</span>
+                            <span class="control-value" id="sales-during-value">70%</span>
+                        </div>
+                        <input type="range" id="sales-during-slider" min="30" max="90" step="5" value="70">
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Сезонность продаж</span>
+                            <span class="control-value" id="seasonality-value">Средняя</span>
+                        </div>
+                        <select id="seasonality">
+                            <option value="low">Низкая</option>
+                            <option value="medium" selected>Средняя</option>
+                            <option value="high">Высокая</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-label">
+                            <span>Период продаж после ввода</span>
+                            <span class="control-value" id="sales-period-value">24</span>
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" id="sales-period" min="6" max="60" step="3" value="24">
+                            <span class="unit">мес.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-title">
+                        <span>CAPEX распределение</span>
+                    </div>
+                    
+                    <div class="capex-distribution">
+                        <div class="capex-item">
+                            <span>Земля (27 млн):</span>
+                            <span>1-й месяц</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>СМР:</span>
+                            <span>Равномерно на период стройки</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>ПИР:</span>
+                            <span>Первые 6 месяцев</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>Сети:</span>
+                            <span>Средняя треть стройки</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>ТУ:</span>
+                            <span>Схема 30/40/30</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>Благоустройство:</span>
+                            <span>Последние 4 месяца</span>
+                        </div>
+                        <div class="capex-item">
+                            <span>Резерв:</span>
+                            <span><span id="reserve-percent-display">5%</span> от CAPEX без земли</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="calculate-btn">
+                        <span>Рассчитать модель</span>
+                    </button>
+                    <button class="btn btn-secondary" id="reset-btn">
+                        <span>Сбросить</span>
+                    </button>
+                    <button class="btn btn-secondary" id="export-btn">
+                        <span>Экспорт данных</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Основное содержимое -->
+            <div class="content-area">
+                <!-- Вкладки -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="overview">Обзор проекта</div>
+                    <div class="tab" data-tab="financials">Финансовые показатели</div>
+                    <div class="tab" data-tab="capex">CAPEX детально</div>
+                    <div class="tab" data-tab="dynamics">Динамика продаж</div>
+                    <div class="tab" data-tab="cashflow">Денежные потоки</div>
+                    <div class="tab" data-tab="interest">Проценты и ставки</div>
+                    <div class="tab" data-tab="escrow">Эскроу счета</div>
+                </div>
+                
+                <!-- Обзор проекта -->
+                <div class="tab-content active" id="overview">
+                    <h2 class="section-title">Обзор проекта</h2>
+                    
+                    <div class="kpi-panels">
+                        <div class="kpi-panel">
+                            <div class="kpi-title">Общая выручка</div>
+                            <div class="kpi-value" id="kpi-revenue">4 704 820</div>
+                            <div class="kpi-unit">тыс. руб.</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">CAPEX проекта</div>
+                            <div class="kpi-value" id="kpi-capex">2 772 640</div>
+                            <div class="kpi-unit">тыс. руб.</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">Собственное участие</div>
+                            <div class="kpi-value" id="kpi-equity">831 792</div>
+                            <div class="kpi-unit">тыс. руб.</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">Банковское финансирование</div>
+                            <div class="kpi-value" id="kpi-bank-financing">1 940 848</div>
+                            <div class="kpi-unit">тыс. руб.</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">NPV проекта</div>
+                            <div class="kpi-value" id="kpi-npv">925 340</div>
+                            <div class="kpi-unit">тыс. руб.</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">IRR проекта</div>
+                            <div class="kpi-value" id="kpi-irr">22.7%</div>
+                            <div class="kpi-unit">годовых</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">Срок окупаемости</div>
+                            <div class="kpi-value" id="kpi-payback">4.1</div>
+                            <div class="kpi-unit">лет</div>
+                        </div>
+                        
+                        <div class="kpi-panel">
+                            <div class="kpi-title">Маржа проекта</div>
+                            <div class="kpi-value" id="kpi-margin">41.0%</div>
+                            <div class="kpi-unit"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <p><strong>Важно:</strong> Все продажи жилой и коммерческой недвижимости в жилом доме освобождены от уплаты НДС в соответствии с законодательством РФ.</p>
+                        <p><strong>Порядок финансирования:</strong> Сначала вносится собственное участие, затем привлекается банковское финансирование.</p>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <div class="chart-title">Структура выручки по типам недвижимости</div>
+                            <div class="chart-placeholder" id="chart-revenue">
+                                <!-- Данные будут через JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-title">Структура CAPEX проекта</div>
+                            <div class="chart-placeholder" id="chart-capex">
+                                <!-- Данные будут через JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-timeline">
+                        <h3 class="section-title">Календарь проекта</h3>
+                        <div class="timeline-visual" id="timeline-visual">
+                            <!-- Timeline будет построен через JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Финансовые показатели -->
+                <div class="tab-content" id="financials">
+                    <h2 class="section-title">Финансовые показатели по сценариям</h2>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Показатель</th>
+                                    <th>Базовый сценарий</th>
+                                    <th>Позитивный сценарий</th>
+                                    <th>Негативный сценарий</th>
+                                    <th>Единица измерения</th>
+                                </tr>
+                            </thead>
+                            <tbody id="financial-table-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- CAPEX детально -->
+                <div class="tab-content" id="capex">
+                    <h2 class="section-title">Детальная структура CAPEX проекта</h2>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="capex-table">
+                            <thead>
+                                <tr>
+                                    <th>Статья затрат</th>
+                                    <th>% от CAPEX</th>
+                                    <th>Сумма, тыс. руб.</th>
+                                    <th>Период реализации</th>
+                                    <th>Распределение</th>
+                                </tr>
+                            </thead>
+                            <tbody id="capex-table-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="chart-card" style="margin-top: 30px;">
+                        <div class="chart-title">График освоения CAPEX по месяцам</div>
+                        <div class="chart-placeholder" id="chart-capex-monthly">
+                            <!-- Данные будут через JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Динамика продаж -->
+                <div class="tab-content" id="dynamics">
+                    <h2 class="section-title">Динамика продаж по месяцам</h2>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="sales-dynamics-table">
+                            <thead>
+                                <tr>
+                                    <th>Месяц</th>
+                                    <th>Жилая пл., кв.м</th>
+                                    <th>Коммерч., кв.м</th>
+                                    <th>Машино-мест, шт.</th>
+                                    <th>Выручка, тыс. руб.</th>
+                                    <th>Поступления на эскроу</th>
+                                    <th>Накопленная выручка</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-dynamics-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Денежные потоки -->
+                <div class="tab-content" id="cashflow">
+                    <h2 class="section-title">Денежные потоки по месяцам (базовый сценарий)</h2>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="cashflow-table">
+                            <thead>
+                                <tr>
+                                    <th>Месяц</th>
+                                    <th>Выручка</th>
+                                    <th>CAPEX расходы</th>
+                                    <th>Проценты</th>
+                                    <th>Налог на прибыль</th>
+                                    <th>Операционный поток</th>
+                                    <th>Финансирование</th>
+                                    <th>Сальдо</th>
+                                    <th>Накопленное</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashflow-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Проценты и ставки -->
+                <div class="tab-content" id="interest">
+                    <h2 class="section-title">Расчет процентных ставок по договору</h2>
+                    
+                    <div class="interest-tables-container">
+                        <div class="interest-table-card">
+                            <h3>Специальная ставка I(v) при покрытии ≥100%</h3>
+                            <p><strong>До 30.01.2028:</strong></p>
+                            <table class="interest-rates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Coverage ratio</th>
+                                        <th>Диапазон</th>
+                                        <th>Ставка I(v)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1.00–1.05</td><td>≥100% и ≤105%</td><td>5.00%</td></tr>
+                                    <tr><td>1.05–1.10</td><td>>105% и ≤110%</td><td>4.18%</td></tr>
+                                    <tr><td>1.10–1.15</td><td>>110% и ≤115%</td><td>3.35%</td></tr>
+                                    <tr><td>1.15–1.20</td><td>>115% и ≤120%</td><td>2.53%</td></tr>
+                                    <tr><td>1.20–1.25</td><td>>120% и ≤125%</td><td>1.70%</td></tr>
+                                    <tr><td>1.25–1.30</td><td>>125% и ≤130%</td><td>0.88%</td></tr>
+                                    <tr><td>1.30–1.35</td><td>>130% и ≤135%</td><td>0.05%</td></tr>
+                                    <tr><td>>1.35</td><td>>135%</td><td>0.01%</td></tr>
+                                </tbody>
+                            </table>
+                            
+                            <p style="margin-top: 15px;"><strong>С 31.01.2028:</strong></p>
+                            <table class="interest-rates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Coverage ratio</th>
+                                        <th>Диапазон</th>
+                                        <th>Ставка I(v)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1.00–1.05</td><td>≥100% и ≤105%</td><td>4.90%</td></tr>
+                                    <tr><td>1.05–1.10</td><td>>105% и ≤110%</td><td>4.08%</td></tr>
+                                    <tr><td>1.10–1.15</td><td>>110% и ≤115%</td><td>3.25%</td></tr>
+                                    <tr><td>1.15–1.20</td><td>>115% и ≤120%</td><td>2.43%</td></tr>
+                                    <tr><td>1.20–1.25</td><td>>120% и ≤125%</td><td>1.60%</td></tr>
+                                    <tr><td>1.25–1.30</td><td>>125% и ≤130%</td><td>0.78%</td></tr>
+                                    <tr><td>>1.30</td><td>>130%</td><td>0.01%</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="interest-table-card">
+                            <h3>Прочие ставки</h3>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p><strong>Специальная ставка I(v) при недостаточном покрытии:</strong></p>
+                                <p>Если F + 0,5×F2 < 100% долга:</p>
+                                <ul style="font-size: 13px; margin-left: 20px;">
+                                    <li>до 30.01.2028 → 5.0%</li>
+                                    <li>с 31.01.2028 → 4.9%</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p><strong>Специальная ставка I(v2):</strong></p>
+                                <ul style="font-size: 13px; margin-left: 20px;">
+                                    <li>до 30.01.2028 → 13.3%</li>
+                                    <li>после 31.01.2028 → 12.7%</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <p><strong>Базовая ставка:</strong></p>
+                                <ul style="font-size: 13px; margin-left: 20px;">
+                                    <li>до 30.01.2028 → ключевая + 5.92%</li>
+                                    <li>после 31.01.2028 → ключевая + 4.8%</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container" style="margin-top: 30px;">
+                        <h3>Расчет ставок по месяцам</h3>
+                        <table class="data-table monthly-details-table" id="interest-details-table">
+                            <thead>
+                                <tr>
+                                    <th>Месяц</th>
+                                    <th>Остаток долга</th>
+                                    <th>F (эскроу)</th>
+                                    <th>F2 (ипотека)</th>
+                                    <th>Coverage Ratio</th>
+                                    <th>Применяемая ставка</th>
+                                    <th>Проценты, тыс. руб.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="interest-details-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Эскроу счета -->
+                <div class="tab-content" id="escrow">
+                    <h2 class="section-title">Движение средств по эскроу счетам</h2>
+                    
+                    <div class="info-box">
+                        <p><strong>Важно:</strong> Все средства от продаж до ввода объекта в эксплуатацию хранятся на эскроу счетах.</p>
+                        <p>Средства разблокируются поэтапно после получения разрешения на ввод объекта в эксплуатацию.</p>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="escrow-table">
+                            <thead>
+                                <tr>
+                                    <th>Месяц</th>
+                                    <th>Поступления на эскроу</th>
+                                    <th>Остаток на эскроу</th>
+                                    <th>% покрытия долга</th>
+                                    <th>Дата разблокировки</th>
+                                </tr>
+                            </thead>
+                            <tbody id="escrow-body">
+                                <!-- Данные будут заполнены через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Финансовая модель жилого комплекса</p>
+            <p>© Все расчеты являются предварительными и носят оценочный характер.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Глобальные переменные модели
+        let modelData = {
+            projectName: "Жилой комплекс",
+            projectDate: "2025-10-15",
+            
+            scenarios: {
+                base: { name: "Базовый", priceFactor: 1.0, salesFactor: 1.0, costFactor: 1.0 },
+                positive: { name: "Позитивный", priceFactor: 1.15, salesFactor: 1.2, costFactor: 0.95 },
+                negative: { name: "Негативный", priceFactor: 0.85, salesFactor: 0.8, costFactor: 1.1 }
+            },
+            currentScenario: 'base',
+            
+            // Таблицы ставок I(v) согласно договору
+            interestTables: {
+                before2028: [
+                    { min: 1.00, max: 1.05, rate: 5.00 },
+                    { min: 1.05, max: 1.10, rate: 4.18 },
+                    { min: 1.10, max: 1.15, rate: 3.35 },
+                    { min: 1.15, max: 1.20, rate: 2.53 },
+                    { min: 1.20, max: 1.25, rate: 1.70 },
+                    { min: 1.25, max: 1.30, rate: 0.88 },
+                    { min: 1.30, max: 1.35, rate: 0.05 },
+                    { min: 1.35, max: 999.99, rate: 0.01 }
+                ],
+                after2028: [
+                    { min: 1.00, max: 1.05, rate: 4.90 },
+                    { min: 1.05, max: 1.10, rate: 4.08 },
+                    { min: 1.10, max: 1.15, rate: 3.25 },
+                    { min: 1.15, max: 1.20, rate: 2.43 },
+                    { min: 1.20, max: 1.25, rate: 1.60 },
+                    { min: 1.25, max: 1.30, rate: 0.78 },
+                    { min: 1.30, max: 999.99, rate: 0.01 }
+                ]
+            },
+            
+            projectParams: {
+                costPerM2: 110,
+                equityPercent: 30,
+                keyRate: 10.0,
+                reservePercent: 5,
+                profitTaxRate: 25,
+                
+                // Площади продаж
+                residentialArea: 29846,
+                residentialPrice: 125,
+                
+                commercialArea: 6950,
+                commercialPrice: 90,
+                
+                parkingCount: 467,
+                parkingPrice: 400,
+                
+                storageCount: 0,
+                storagePrice: 0,
+                
+                // Календарь проекта
+                dates: {
+                    start: '2025-10-01',
+                    constructionStart: '2026-02-01',
+                    operationStart: '2029-06-30'
+                },
+                
+                constructionMonths: 41,
+                
+                // Параметры продаж
+                salesParams: {
+                    duringConstruction: 70,
+                    seasonality: 'medium',
+                    postConstructionPeriod: 24
+                }
+            },
+            
+            calculated: {
+                // Выручка
+                totalRevenue: 0,
+                residentialRevenue: 0,
+                commercialRevenue: 0,
+                parkingRevenue: 0,
+                storageRevenue: 0,
+                
+                // CAPEX
+                totalCapex: 0,
+                landCost: 27000, // 27 млн рублей
+                constructionCost: 0,
+                designCost: 0,
+                networksCost: 0,
+                technicalConditionsCost: 0,
+                improvementCost: 0,
+                reserveCost: 0,
+                
+                // Финансирование
+                equityAmount: 0,
+                bankFinancingAmount: 0,
+                totalFinancingAmount: 0,
+                
+                // Финансовые показатели
+                npv: 0,
+                irr: 0,
+                paybackPeriod: 0,
+                margin: 0,
+                totalInterest: 0
+            },
+            
+            // Данные по месяцам
+            monthlyData: [],
+            
+            // Структура CAPEX
+            capexStructure: []
+        };
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            bindEventListeners();
+            calculateModel();
+            updateUI();
+            generateTimeline();
+        });
+        
+        // Привязка обработчиков событий
+        function bindEventListeners() {
+            // Название проекта и дата
+            document.getElementById('project-name').addEventListener('input', function() {
+                modelData.projectName = this.value;
+            });
+            
+            document.getElementById('project-date').addEventListener('change', function() {
+                modelData.projectDate = this.value;
+            });
+            
+            // Сценарии
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const scenario = this.getAttribute('data-scenario');
+                    setScenario(scenario);
+                });
+            });
+            
+            // Основные параметры
+            document.getElementById('equity-slider').addEventListener('input', function() {
+                const value = parseInt(this.value);
+                document.getElementById('equity-value').textContent = `${value}%`;
+                document.getElementById('equity-input').value = value;
+                modelData.projectParams.equityPercent = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('equity-input').addEventListener('input', function() {
+                const value = Math.min(50, Math.max(0, parseInt(this.value) || 0));
+                this.value = value;
+                document.getElementById('equity-slider').value = value;
+                document.getElementById('equity-value').textContent = `${value}%`;
+                modelData.projectParams.equityPercent = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('cost-per-m2').addEventListener('input', function() {
+                const value = parseInt(this.value) || 0;
+                document.getElementById('cost-per-m2-value').textContent = formatNumber(value);
+                modelData.projectParams.costPerM2 = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('reserve-slider').addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                document.getElementById('reserve-value').textContent = `${value}%`;
+                document.getElementById('reserve-percent-display').textContent = `${value}%`;
+                modelData.projectParams.reservePercent = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            // Площади продаж
+            document.getElementById('residential-area').addEventListener('input', function() {
+                modelData.projectParams.residentialArea = parseInt(this.value) || 0;
+                updateAreaSummary();
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('residential-price').addEventListener('input', function() {
+                modelData.projectParams.residentialPrice = parseInt(this.value) || 0;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('commercial-area').addEventListener('input', function() {
+                modelData.projectParams.commercialArea = parseInt(this.value) || 0;
+                updateAreaSummary();
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('commercial-price').addEventListener('input', function() {
+                modelData.projectParams.commercialPrice = parseInt(this.value) || 0;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('parking-count').addEventListener('input', function() {
+                modelData.projectParams.parkingCount = parseInt(this.value) || 0;
+                updateAreaSummary();
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('parking-price').addEventListener('input', function() {
+                modelData.projectParams.parkingPrice = parseInt(this.value) || 0;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('storage-count').addEventListener('input', function() {
+                modelData.projectParams.storageCount = parseInt(this.value) || 0;
+                updateAreaSummary();
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('storage-price').addEventListener('input', function() {
+                modelData.projectParams.storagePrice = parseInt(this.value) || 0;
+                calculateModel();
+                updateUI();
+            });
+            
+            // Процентные ставки
+            document.getElementById('key-rate-slider').addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                document.getElementById('key-rate-value').textContent = `${value.toFixed(1)}%`;
+                modelData.projectParams.keyRate = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('profit-tax-slider').addEventListener('input', function() {
+                document.getElementById('profit-tax-value').textContent = `${this.value}%`;
+                modelData.projectParams.profitTaxRate = parseInt(this.value);
+                calculateModel();
+                updateUI();
+            });
+            
+            // Календарь проекта
+            document.getElementById('construction-months-slider').addEventListener('input', function() {
+                const value = parseInt(this.value);
+                document.getElementById('construction-months').textContent = value;
+                modelData.projectParams.constructionMonths = value;
+                calculateModel();
+                updateUI();
+                generateTimeline();
+            });
+            
+            ['start-date', 'construction-start', 'operation-start'].forEach(id => {
+                document.getElementById(id).addEventListener('change', function() {
+                    modelData.projectParams.dates[id.replace('-', '')] = this.value;
+                    calculateConstructionMonths();
+                    calculateModel();
+                    updateUI();
+                    generateTimeline();
+                });
+            });
+            
+            // Параметры продаж
+            document.getElementById('sales-during-slider').addEventListener('input', function() {
+                document.getElementById('sales-during-value').textContent = `${this.value}%`;
+                modelData.projectParams.salesParams.duringConstruction = parseInt(this.value);
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('sales-period').addEventListener('input', function() {
+                const value = parseInt(this.value) || 0;
+                document.getElementById('sales-period-value').textContent = value;
+                modelData.projectParams.salesParams.postConstructionPeriod = value;
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('seasonality').addEventListener('change', function() {
+                modelData.projectParams.salesParams.seasonality = this.value;
+                calculateModel();
+                updateUI();
+            });
+            
+            // Вкладки
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Кнопки
+            document.getElementById('calculate-btn').addEventListener('click', function() {
+                calculateModel();
+                updateUI();
+            });
+            
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                resetToDefaults();
+            });
+            
+            document.getElementById('export-btn').addEventListener('click', function() {
+                exportData();
+            });
+        }
+        
+        // Расчет длительности строительства
+        function calculateConstructionMonths() {
+            const startDate = new Date(modelData.projectParams.dates.constructionStart);
+            const endDate = new Date(modelData.projectParams.dates.operationStart);
+            
+            const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                          (endDate.getMonth() - startDate.getMonth());
+            
+            modelData.projectParams.constructionMonths = Math.max(1, months);
+            document.getElementById('construction-months').textContent = modelData.projectParams.constructionMonths;
+            document.getElementById('construction-months-slider').value = modelData.projectParams.constructionMonths;
+        }
+        
+        // Обновление сводки по площадям
+        function updateAreaSummary() {
+            const params = modelData.projectParams;
+            const totalArea = params.residentialArea + params.commercialArea;
+            const totalUnits = params.parkingCount + params.storageCount;
+            
+            document.getElementById('total-area-sum').textContent = formatNumber(totalArea);
+            document.getElementById('total-units-sum').textContent = formatNumber(totalUnits);
+        }
+        
+        // Установка сценария
+        function setScenario(scenario) {
+            modelData.currentScenario = scenario;
+            
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.scenario-btn[data-scenario="${scenario}"]`).classList.add('active');
+            
+            calculateModel();
+            updateUI();
+        }
+        
+        // Расчет модели
+        function calculateModel() {
+            const params = modelData.projectParams;
+            const scenario = modelData.scenarios[modelData.currentScenario];
+            
+            // 1. Расчет общей площади
+            const totalArea = params.residentialArea + params.commercialArea;
+            
+            // 2. Расчет выручки по типам недвижимости
+            modelData.calculated.residentialRevenue = params.residentialArea * params.residentialPrice * scenario.priceFactor * scenario.salesFactor;
+            modelData.calculated.commercialRevenue = params.commercialArea * params.commercialPrice * scenario.priceFactor * scenario.salesFactor;
+            modelData.calculated.parkingRevenue = params.parkingCount * params.parkingPrice * scenario.priceFactor * scenario.salesFactor;
+            modelData.calculated.storageRevenue = params.storageCount * params.storagePrice * scenario.priceFactor * scenario.salesFactor;
+            
+            // 3. Расчет общей выручки
+            modelData.calculated.totalRevenue = modelData.calculated.residentialRevenue + 
+                                              modelData.calculated.commercialRevenue + 
+                                              modelData.calculated.parkingRevenue + 
+                                              modelData.calculated.storageRevenue;
+            
+            // 4. Расчет CAPEX
+            // Строительные работы (СМР) - основная часть
+            modelData.calculated.constructionCost = totalArea * params.costPerM2 * 0.65 * scenario.costFactor;
+            
+            // Проектирование (ПИР) - 5% от строительства
+            modelData.calculated.designCost = modelData.calculated.constructionCost * 0.05;
+            
+            // Сети - 12% от строительства
+            modelData.calculated.networksCost = modelData.calculated.constructionCost * 0.12;
+            
+            // Технические условия (ТУ) - 8% от строительства
+            modelData.calculated.technicalConditionsCost = modelData.calculated.constructionCost * 0.08;
+            
+            // Благоустройство - 5% от строительства
+            modelData.calculated.improvementCost = modelData.calculated.constructionCost * 0.05;
+            
+            // CAPEX без земли
+            const capexWithoutLand = modelData.calculated.constructionCost + 
+                                    modelData.calculated.designCost + 
+                                    modelData.calculated.networksCost + 
+                                    modelData.calculated.technicalConditionsCost + 
+                                    modelData.calculated.improvementCost;
+            
+            // Резерв - процент от CAPEX без земли
+            modelData.calculated.reserveCost = capexWithoutLand * (params.reservePercent / 100);
+            
+            // Общий CAPEX
+            modelData.calculated.totalCapex = modelData.calculated.landCost + capexWithoutLand + modelData.calculated.reserveCost;
+            
+            // 5. Расчет финансирования
+            // Сначала собственное участие
+            modelData.calculated.equityAmount = modelData.calculated.totalCapex * (params.equityPercent / 100);
+            
+            // Затем банковское финансирование (остаток)
+            modelData.calculated.bankFinancingAmount = modelData.calculated.totalCapex - modelData.calculated.equityAmount;
+            modelData.calculated.totalFinancingAmount = modelData.calculated.totalCapex;
+            
+            // 6. Генерация помесячных данных
+            generateMonthlyData();
+            
+            // 7. Расчет финансовых показателей
+            calculateFinancialMetrics();
+            
+            // 8. Обновление расчетных значений
+            document.getElementById('calculated-capex').textContent = formatNumber(Math.round(modelData.calculated.totalCapex));
+            document.getElementById('calculated-total-revenue').textContent = formatNumber(Math.round(modelData.calculated.totalRevenue));
+            document.getElementById('calculated-margin').textContent = modelData.calculated.margin.toFixed(1) + '%';
+        }
+        
+        // Генерация помесячных данных
+        function generateMonthlyData() {
+            const params = modelData.projectParams;
+            const scenario = modelData.scenarios[modelData.currentScenario];
+            const constructionMonths = params.constructionMonths;
+            const totalMonths = constructionMonths + params.salesParams.postConstructionPeriod;
+            
+            // Сброс данных
+            modelData.monthlyData = [];
+            
+            // Распределение продаж
+            const residentialDuring = params.residentialArea * (params.salesParams.duringConstruction / 100);
+            const residentialAfter = params.residentialArea - residentialDuring;
+            
+            const commercialDuring = params.commercialArea * (params.salesParams.duringConstruction / 100);
+            const commercialAfter = params.commercialArea - commercialDuring;
+            
+            const parkingDuring = params.parkingCount * (params.salesParams.duringConstruction / 100);
+            const parkingAfter = params.parkingCount - parkingDuring;
+            
+            // Распределение CAPEX по месяцам
+            const capexMonthly = distributeCapexByMonth();
+            
+            // Параметры сезонности
+            const seasonalityFactors = getSeasonalityFactors();
+            
+            // Инициализация переменных для расчета
+            let cumulativeRevenue = 0;
+            let cumulativeEscrow = 0;
+            let cumulativeCapex = 0;
+            let remainingDebt = modelData.calculated.bankFinancingAmount;
+            let equityRemaining = modelData.calculated.equityAmount;
+            let bankFinancingRemaining = modelData.calculated.bankFinancingAmount;
+            let cashBalance = 0;
+            let totalInterest = 0;
+            
+            // Порядок финансирования: сначала собственные средства
+            const equityFirstMonths = Math.min(3, constructionMonths);
+            const equityPerMonth = equityRemaining / equityFirstMonths;
+            
+            // Банковское финансирование начинается после собственных средств
+            const bankStartMonth = equityFirstMonths;
+            const bankMonths = Math.max(1, constructionMonths - equityFirstMonths);
+            const bankPerMonth = bankFinancingRemaining / bankMonths;
+            
+            for (let month = 0; month < totalMonths; month++) {
+                const date = new Date(params.dates.constructionStart);
+                date.setMonth(date.getMonth() + month);
+                const monthName = date.toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' });
+                const isConstructionPhase = month < constructionMonths;
+                
+                // Продажи
+                let residentialSold = 0;
+                let commercialSold = 0;
+                let parkingSold = 0;
+                
+                if (isConstructionPhase) {
+                    residentialSold = residentialDuring / constructionMonths;
+                    commercialSold = commercialDuring / constructionMonths;
+                    parkingSold = parkingDuring / constructionMonths;
+                } else {
+                    const salesMonth = month - constructionMonths;
+                    residentialSold = residentialAfter / params.salesParams.postConstructionPeriod;
+                    commercialSold = commercialAfter / params.salesParams.postConstructionPeriod;
+                    parkingSold = parkingAfter / params.salesParams.postConstructionPeriod;
+                }
+                
+                // Применяем сезонность
+                const seasonMonth = month % 12;
+                const seasonFactor = seasonalityFactors[seasonMonth] || 1.0;
+                residentialSold *= seasonFactor;
+                commercialSold *= seasonFactor;
+                parkingSold *= seasonFactor;
+                
+                // Цены с учетом роста (2% в год)
+                const priceGrowth = 1 + (month * 0.02 / 12);
+                const residentialPrice = params.residentialPrice * priceGrowth * scenario.priceFactor;
+                const commercialPrice = params.commercialPrice * priceGrowth * scenario.priceFactor;
+                const parkingPrice = params.parkingPrice * priceGrowth * scenario.priceFactor;
+                
+                // Выручка
+                const residentialRevenue = residentialSold * residentialPrice;
+                const commercialRevenue = commercialSold * commercialPrice;
+                const parkingRevenue = parkingSold * parkingPrice;
+                const totalRevenue = residentialRevenue + commercialRevenue + parkingRevenue;
+                
+                // Поступления на эскроу (во время строительства)
+                const escrowIn = isConstructionPhase ? totalRevenue * 0.9 : 0;
+                cumulativeEscrow += escrowIn;
+                
+                // CAPEX расходы
+                const capexExpense = capexMonthly[month] || 0;
+                cumulativeCapex += capexExpense;
+                
+                // Финансирование
+                let equityFinancing = 0;
+                let bankFinancing = 0;
+                
+                if (month < equityFirstMonths) {
+                    equityFinancing = equityPerMonth;
+                    equityRemaining -= equityPerMonth;
+                }
+                
+                if (month >= bankStartMonth && month < bankStartMonth + bankMonths) {
+                    bankFinancing = bankPerMonth;
+                    bankFinancingRemaining -= bankPerMonth;
+                    remainingDebt -= bankPerMonth;
+                }
+                
+                const totalFinancing = equityFinancing + bankFinancing;
+                
+                // Расчет процентов
+                const interestRate = calculateInterestRate(month, cumulativeEscrow, remainingDebt);
+                const interest = remainingDebt > 0 ? (remainingDebt * interestRate / 100 / 12) : 0;
+                totalInterest += interest;
+                
+                // Налог на прибыль (после завершения строительства)
+                let tax = 0;
+                if (!isConstructionPhase && totalRevenue > 0) {
+                    const operationalProfit = totalRevenue * 0.2; // Упрощенный расчет
+                    tax = operationalProfit * (params.profitTaxRate / 100);
+                }
+                
+                // Денежные потоки
+                const operationalCashflow = totalRevenue - interest - tax;
+                const investmentCashflow = -capexExpense;
+                const financingCashflow = totalFinancing;
+                
+                const balance = operationalCashflow + investmentCashflow + financingCashflow;
+                cashBalance += balance;
+                cumulativeRevenue += totalRevenue;
+                
+                // Coverage ratio
+                const coverageRatio = cumulativeEscrow > 0 && remainingDebt > 0 ? 
+                    (cumulativeEscrow + (cumulativeRevenue * 0.5)) / remainingDebt : 0;
+                
+                // Дата разблокировки эскроу
+                let unlockDate = '-';
+                if (!isConstructionPhase && month - constructionMonths < 4) {
+                    const unlockDateObj = new Date(params.dates.operationStart);
+                    unlockDateObj.setMonth(unlockDateObj.getMonth() + (month - constructionMonths));
+                    unlockDate = unlockDateObj.toLocaleDateString('ru-RU');
+                }
+                
+                // Сохраняем данные
+                modelData.monthlyData.push({
+                    month: month + 1,
+                    date: monthName,
+                    isConstructionPhase,
+                    residentialSold,
+                    commercialSold,
+                    parkingSold,
+                    residentialPrice,
+                    commercialPrice,
+                    parkingPrice,
+                    residentialRevenue,
+                    commercialRevenue,
+                    parkingRevenue,
+                    totalRevenue,
+                    cumulativeRevenue,
+                    escrowIn,
+                    escrowBalance: cumulativeEscrow,
+                    capexExpense,
+                    cumulativeCapex,
+                    interestRate,
+                    interest,
+                    cumulativeInterest: totalInterest,
+                    tax,
+                    operationalCashflow,
+                    investmentCashflow,
+                    equityFinancing,
+                    bankFinancing,
+                    totalFinancing,
+                    balance,
+                    cashBalance,
+                    remainingDebt,
+                    coverageRatio,
+                    unlockDate
+                });
+            }
+            
+            modelData.calculated.totalInterest = totalInterest;
+        }
+        
+        // Распределение CAPEX по месяцам
+        function distributeCapexByMonth() {
+            const constructionMonths = modelData.projectParams.constructionMonths;
+            const monthlyCapex = new Array(constructionMonths + modelData.projectParams.salesParams.postConstructionPeriod).fill(0);
+            
+            // Земля - 1-й месяц
+            monthlyCapex[0] = modelData.calculated.landCost;
+            
+            // СМР - равномерно на период стройки
+            const smrPerMonth = modelData.calculated.constructionCost / constructionMonths;
+            for (let i = 0; i < constructionMonths; i++) {
+                monthlyCapex[i] += smrPerMonth;
+            }
+            
+            // ПИР - первые 6 месяцев
+            const pirMonths = Math.min(6, constructionMonths);
+            const pirPerMonth = modelData.calculated.designCost / pirMonths;
+            for (let i = 0; i < pirMonths; i++) {
+                monthlyCapex[i] += pirPerMonth;
+            }
+            
+            // Сети - средняя треть стройки
+            const networkStart = Math.floor(constructionMonths / 3);
+            const networkEnd = Math.floor(constructionMonths * 2 / 3);
+            const networkMonths = Math.max(1, networkEnd - networkStart);
+            const networkPerMonth = modelData.calculated.networksCost / networkMonths;
+            for (let i = networkStart; i < networkEnd; i++) {
+                if (i < constructionMonths) {
+                    monthlyCapex[i] += networkPerMonth;
+                }
+            }
+            
+            // ТУ - схема 30/40/30
+            const tuCost = modelData.calculated.technicalConditionsCost;
+            const tuMonths = Math.min(3, constructionMonths);
+            
+            if (tuMonths >= 3) {
+                // Распределение по схеме 30/40/30
+                monthlyCapex[Math.floor(constructionMonths / 4)] += tuCost * 0.3;
+                monthlyCapex[Math.floor(constructionMonths / 2)] += tuCost * 0.4;
+                monthlyCapex[Math.floor(constructionMonths * 3 / 4)] += tuCost * 0.3;
+            } else {
+                // Если меньше 3 месяцев - равномерно
+                const tuPerMonth = tuCost / tuMonths;
+                for (let i = 0; i < tuMonths; i++) {
+                    monthlyCapex[i] += tuPerMonth;
+                }
+            }
+            
+            // Благоустройство - последние 4 месяца стройки
+            const improvementMonths = Math.min(4, constructionMonths);
+            const improvementPerMonth = modelData.calculated.improvementCost / improvementMonths;
+            for (let i = constructionMonths - improvementMonths; i < constructionMonths; i++) {
+                if (i >= 0) {
+                    monthlyCapex[i] += improvementPerMonth;
+                }
+            }
+            
+            // Резерв - равномерно на всю стройку
+            const reservePerMonth = modelData.calculated.reserveCost / constructionMonths;
+            for (let i = 0; i < constructionMonths; i++) {
+                monthlyCapex[i] += reservePerMonth;
+            }
+            
+            return monthlyCapex;
+        }
+        
+        // Получение факторов сезонности
+        function getSeasonalityFactors() {
+            const seasonality = modelData.projectParams.salesParams.seasonality;
+            
+            if (seasonality === 'low') {
+                return Array(12).fill(1.0);
+            } else if (seasonality === 'high') {
+                return [0.6, 0.7, 0.9, 1.2, 1.4, 1.3, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6];
+            } else { // medium
+                return [0.8, 0.9, 1.0, 1.1, 1.2, 1.1, 1.0, 0.9, 0.9, 0.9, 0.9, 0.8];
+            }
+        }
+        
+        // Расчет процентной ставки по договору
+        function calculateInterestRate(month, escrowBalance, remainingDebt) {
+            const params = modelData.projectParams;
+            const currentDate = new Date(params.dates.constructionStart);
+            currentDate.setMonth(currentDate.getMonth() + month);
+            
+            const cutoffDate = new Date('2028-01-31');
+            const isBefore2028 = currentDate <= cutoffDate;
+            
+            // Coverage ratio (F + 0.5×F2) / долг
+            // Для упрощения: F2 = 50% от выручки
+            const f2 = modelData.monthlyData[month]?.cumulativeRevenue * 0.5 || 0;
+            const coverageRatio = (escrowBalance + 0.5 * f2) / remainingDebt;
+            
+            if (coverageRatio < 1.0) {
+                // Недостаточное покрытие
+                return isBefore2028 ? 5.0 : 4.9;
+            }
+            
+            // Достаточное покрытие - используем таблицы
+            const table = isBefore2028 ? modelData.interestTables.before2028 : modelData.interestTables.after2028;
+            
+            for (const row of table) {
+                if (coverageRatio >= row.min && coverageRatio < row.max) {
+                    return row.rate;
+                }
+            }
+            
+            // По умолчанию - специальная ставка I(v2)
+            return isBefore2028 ? 13.3 : 12.7;
+        }
+        
+        // Расчет финансовых показателей
+        function calculateFinancialMetrics() {
+            const params = modelData.projectParams;
+            const totalMonths = params.constructionMonths + params.salesParams.postConstructionPeriod;
+            
+            // Расчет NPV
+            const discountRate = 0.12; // 12% годовых
+            let npv = 0;
+            
+            for (let month = 0; month < totalMonths; month++) {
+                const monthlyData = modelData.monthlyData[month];
+                if (!monthlyData) continue;
+                
+                const cashFlow = monthlyData.balance;
+                const discountFactor = Math.pow(1 + discountRate/12, month);
+                npv += cashFlow / discountFactor;
+            }
+            
+            modelData.calculated.npv = npv;
+            
+            // Расчет IRR (упрощенный)
+            modelData.calculated.irr = 0.15 + (npv / modelData.calculated.totalRevenue) * 0.15;
+            modelData.calculated.irr = Math.max(0.05, Math.min(0.35, modelData.calculated.irr));
+            
+            // Расчет срока окупаемости
+            let cumulativeCashFlow = 0;
+            let paybackMonth = 0;
+            
+            for (let month = 0; month < totalMonths; month++) {
+                const monthlyData = modelData.monthlyData[month];
+                if (!monthlyData) continue;
+                
+                cumulativeCashFlow += monthlyData.balance;
+                if (cumulativeCashFlow >= 0 && paybackMonth === 0) {
+                    paybackMonth = month + 1;
+                }
+            }
+            
+            modelData.calculated.paybackPeriod = paybackMonth / 12;
+            
+            // Расчет маржи
+            const totalCost = modelData.calculated.totalCapex + modelData.calculated.totalInterest;
+            modelData.calculated.margin = ((modelData.calculated.totalRevenue - totalCost) / modelData.calculated.totalRevenue) * 100;
+        }
+        
+        // Обновление интерфейса
+        function updateUI() {
+            // Ключевые показатели
+            document.getElementById('kpi-revenue').textContent = formatNumber(Math.round(modelData.calculated.totalRevenue));
+            document.getElementById('kpi-capex').textContent = formatNumber(Math.round(modelData.calculated.totalCapex));
+            document.getElementById('kpi-equity').textContent = formatNumber(Math.round(modelData.calculated.equityAmount));
+            document.getElementById('kpi-bank-financing').textContent = formatNumber(Math.round(modelData.calculated.bankFinancingAmount));
+            document.getElementById('kpi-npv').textContent = formatNumber(Math.round(modelData.calculated.npv));
+            document.getElementById('kpi-irr').textContent = (modelData.calculated.irr * 100).toFixed(1) + '%';
+            document.getElementById('kpi-payback').textContent = modelData.calculated.paybackPeriod.toFixed(1);
+            document.getElementById('kpi-margin').textContent = modelData.calculated.margin.toFixed(1) + '%';
+            
+            // Финансирование
+            const bankPercent = 100 - modelData.projectParams.equityPercent;
+            document.getElementById('equity-amount').textContent = formatNumber(Math.round(modelData.calculated.equityAmount));
+            document.getElementById('bank-financing-percent').textContent = `${bankPercent}%`;
+            document.getElementById('bank-financing-amount').textContent = formatNumber(Math.round(modelData.calculated.bankFinancingAmount));
+            document.getElementById('total-financing-amount').textContent = formatNumber(Math.round(modelData.calculated.totalFinancingAmount));
+            
+            // Обновление графиков
+            updateChartPlaceholders();
+            
+            // Обновление таблиц
+            updateFinancialTable();
+            updateCapexTable();
+            updateSalesTable();
+            updateCashflowTable();
+            updateInterestTable();
+            updateEscrowTable();
+        }
+        
+        // Обновление таблицы финансовых показателей
+        function updateFinancialTable() {
+            const tbody = document.getElementById('financial-table-body');
+            tbody.innerHTML = '';
+            
+            const scenarios = ['base', 'positive', 'negative'];
+            
+            // Доходы
+            addTableSection(tbody, 'Доходы');
+            
+            const revenueRow = createScenarioRow('Общая выручка', scenarios, 
+                s => formatNumber(Math.round(modelData.scenarios[s].priceFactor * modelData.scenarios[s].salesFactor * 
+                modelData.calculated.totalRevenue)));
+            tbody.appendChild(revenueRow);
+            
+            const residentialRow = createScenarioRow('Выручка от жилой недвижимости', scenarios,
+                s => formatNumber(Math.round(modelData.scenarios[s].priceFactor * modelData.scenarios[s].salesFactor * 
+                modelData.calculated.residentialRevenue)));
+            tbody.appendChild(residentialRow);
+            
+            const commercialRow = createScenarioRow('Выручка от коммерческой недвижимости', scenarios,
+                s => formatNumber(Math.round(modelData.scenarios[s].priceFactor * modelData.scenarios[s].salesFactor * 
+                modelData.calculated.commercialRevenue)));
+            tbody.appendChild(commercialRow);
+            
+            const parkingRow = createScenarioRow('Выручка от машино-мест', scenarios,
+                s => formatNumber(Math.round(modelData.scenarios[s].priceFactor * modelData.scenarios[s].salesFactor * 
+                modelData.calculated.parkingRevenue)));
+            tbody.appendChild(parkingRow);
+            
+            // Затраты
+            addTableSection(tbody, 'Затраты');
+            
+            const capexRow = createScenarioRow('CAPEX проекта', scenarios,
+                s => formatNumber(Math.round(modelData.calculated.totalCapex * modelData.scenarios[s].costFactor)));
+            tbody.appendChild(capexRow);
+            
+            const landRow = createScenarioRow('Земля', scenarios,
+                s => formatNumber(Math.round(modelData.calculated.landCost * modelData.scenarios[s].costFactor)));
+            tbody.appendChild(landRow);
+            
+            const constructionRow = createScenarioRow('Строительные работы (СМР)', scenarios,
+                s => formatNumber(Math.round(modelData.calculated.constructionCost * modelData.scenarios[s].costFactor)));
+            tbody.appendChild(constructionRow);
+            
+            const designRow = createScenarioRow('Проектирование (ПИР)', scenarios,
+                s => formatNumber(Math.round(modelData.calculated.designCost * modelData.scenarios[s].costFactor)));
+            tbody.appendChild(designRow);
+            
+            const interestRow = createScenarioRow('Проценты по финансированию', scenarios,
+                s => formatNumber(Math.round(modelData.calculated.totalInterest * modelData.scenarios[s].costFactor)));
+            tbody.appendChild(interestRow);
+            
+            // Финансовые результаты
+            addTableSection(tbody, 'Финансовые результаты');
+            
+            const profitRow = createScenarioRow('Операционная прибыль', scenarios,
+                s => {
+                    const scenarioFactor = modelData.scenarios[s];
+                    const revenue = modelData.calculated.totalRevenue * scenarioFactor.priceFactor * scenarioFactor.salesFactor;
+                    const cost = modelData.calculated.totalCapex * scenarioFactor.costFactor;
+                    const interest = modelData.calculated.totalInterest * scenarioFactor.costFactor;
+                    return formatNumber(Math.round(revenue - cost - interest));
+                });
+            tbody.appendChild(profitRow);
+            
+            const taxRow = createScenarioRow(`Налог на прибыль (${modelData.projectParams.profitTaxRate}%)`, scenarios,
+                s => {
+                    const scenarioFactor = modelData.scenarios[s];
+                    const revenue = modelData.calculated.totalRevenue * scenarioFactor.priceFactor * scenarioFactor.salesFactor;
+                    const cost = modelData.calculated.totalCapex * scenarioFactor.costFactor;
+                    const interest = modelData.calculated.totalInterest * scenarioFactor.costFactor;
+                    const profit = revenue - cost - interest;
+                    const tax = profit > 0 ? profit * (modelData.projectParams.profitTaxRate / 100) : 0;
+                    return formatNumber(Math.round(tax));
+                });
+            tbody.appendChild(taxRow);
+            
+            // Инвестиционные показатели
+            addTableSection(tbody, 'Инвестиционные показатели');
+            
+            const npvRow = createScenarioRow('NPV проекта', scenarios,
+                s => {
+                    const scenarioFactor = modelData.scenarios[s];
+                    const baseNPV = modelData.calculated.npv;
+                    return formatNumber(Math.round(baseNPV * scenarioFactor.priceFactor));
+                });
+            tbody.appendChild(npvRow);
+            
+            const irrRow = createScenarioRow('IRR проекта', scenarios,
+                s => {
+                    const scenarioFactor = modelData.scenarios[s];
+                    const baseIRR = modelData.calculated.irr;
+                    const adjustedIRR = baseIRR * (scenarioFactor.priceFactor * scenarioFactor.salesFactor / scenarioFactor.costFactor);
+                    return (adjustedIRR * 100).toFixed(1) + '%';
+                });
+            tbody.appendChild(irrRow);
+            
+            const marginRow = createScenarioRow('Маржа проекта', scenarios,
+                s => {
+                    const scenarioFactor = modelData.scenarios[s];
+                    const baseMargin = modelData.calculated.margin;
+                    const adjustedMargin = baseMargin * (scenarioFactor.priceFactor * scenarioFactor.salesFactor / scenarioFactor.costFactor);
+                    return adjustedMargin.toFixed(1) + '%';
+                });
+            tbody.appendChild(marginRow);
+        }
+        
+        // Вспомогательные функции для таблиц
+        function addTableSection(tbody, title) {
+            const row = document.createElement('tr');
+            row.className = 'table-section';
+            row.innerHTML = `<td colspan="5">${title}</td>`;
+            tbody.appendChild(row);
+        }
+        
+        function createScenarioRow(label, scenarios, valueFunc) {
+            const row = document.createElement('tr');
+            const cells = [label];
+            
+            scenarios.forEach(scenario => {
+                cells.push(valueFunc(scenario));
+            });
+            
+            cells.push('тыс. руб.');
+            
+            row.innerHTML = cells.map(cell => `<td>${cell}</td>`).join('');
+            return row;
+        }
+        
+        // Обновление таблицы CAPEX
+        function updateCapexTable() {
+            const tbody = document.getElementById('capex-table-body');
+            tbody.innerHTML = '';
+            
+            const capexItems = [
+                { 
+                    name: 'Земля', 
+                    amount: modelData.calculated.landCost,
+                    percent: (modelData.calculated.landCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: '1-й месяц',
+                    distribution: 'Единовременно'
+                },
+                { 
+                    name: 'Строительные работы (СМР)', 
+                    amount: modelData.calculated.constructionCost,
+                    percent: (modelData.calculated.constructionCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Весь период стройки',
+                    distribution: 'Равномерно'
+                },
+                { 
+                    name: 'Проектирование (ПИР)', 
+                    amount: modelData.calculated.designCost,
+                    percent: (modelData.calculated.designCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Первые 6 месяцев',
+                    distribution: 'Равномерно'
+                },
+                { 
+                    name: 'Сети', 
+                    amount: modelData.calculated.networksCost,
+                    percent: (modelData.calculated.networksCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Средняя треть стройки',
+                    distribution: 'Равномерно'
+                },
+                { 
+                    name: 'Технические условия (ТУ)', 
+                    amount: modelData.calculated.technicalConditionsCost,
+                    percent: (modelData.calculated.technicalConditionsCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Внутри стройки',
+                    distribution: 'Схема 30/40/30'
+                },
+                { 
+                    name: 'Благоустройство', 
+                    amount: modelData.calculated.improvementCost,
+                    percent: (modelData.calculated.improvementCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Последние 4 месяца',
+                    distribution: 'Равномерно'
+                },
+                { 
+                    name: 'Резерв', 
+                    amount: modelData.calculated.reserveCost,
+                    percent: (modelData.calculated.reserveCost / modelData.calculated.totalCapex * 100).toFixed(1),
+                    period: 'Весь период стройки',
+                    distribution: 'Равномерно'
+                }
+            ];
+            
+            capexItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.percent}%</td>
+                    <td>${formatNumber(Math.round(item.amount))}</td>
+                    <td>${item.period}</td>
+                    <td>${item.distribution}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Итоговая строка
+            const totalRow = document.createElement('tr');
+            totalRow.style.backgroundColor = '#f0f7ff';
+            totalRow.innerHTML = `
+                <td><strong>ИТОГО CAPEX</strong></td>
+                <td><strong>100%</strong></td>
+                <td><strong>${formatNumber(Math.round(modelData.calculated.totalCapex))}</strong></td>
+                <td colspan="2"></td>
+            `;
+            tbody.appendChild(totalRow);
+            
+            // Обновление графика освоения CAPEX
+            updateCapexMonthlyChart();
+        }
+        
+        // Обновление графика освоения CAPEX по месяцам
+        function updateCapexMonthlyChart() {
+            const chartDiv = document.getElementById('chart-capex-monthly');
+            const constructionMonths = modelData.projectParams.constructionMonths;
+            
+            let chartHTML = `<div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">`;
+            
+            // Показываем первые и последние 6 месяцев
+            const monthsToShow = Math.min(12, constructionMonths);
+            const monthlyCapex = distributeCapexByMonth();
+            
+            for (let i = 0; i < monthsToShow; i++) {
+                if (i < constructionMonths) {
+                    const monthName = new Date(modelData.projectParams.dates.constructionStart);
+                    monthName.setMonth(monthName.getMonth() + i);
+                    const monthStr = monthName.toLocaleDateString('ru-RU', { month: 'short' });
+                    
+                    const capexAmount = monthlyCapex[i] || 0;
+                    const percentage = (capexAmount / modelData.calculated.totalCapex * 100).toFixed(1);
+                    
+                    chartHTML += `
+                        <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 13px; min-width: 60px;">${monthStr}:</span>
+                            <div style="flex: 1; margin: 0 10px; height: 20px; background-color: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${percentage}%; height: 100%; background-color: var(--primary-color);"></div>
+                            </div>
+                            <span style="font-size: 13px; min-width: 80px; text-align: right;">${formatNumber(Math.round(capexAmount))} тыс. руб.</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (constructionMonths > 12) {
+                chartHTML += `<div style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">... и еще ${constructionMonths - 12} месяцев</div>`;
+            }
+            
+            chartHTML += `</div>`;
+            chartDiv.innerHTML = chartHTML;
+        }
+        
+        // Обновление таблицы продаж
+        function updateSalesTable() {
+            const tbody = document.getElementById('sales-dynamics-body');
+            tbody.innerHTML = '';
+            
+            // Показываем только каждый 3-й месяц для читаемости
+            for (let i = 0; i < modelData.monthlyData.length; i += 3) {
+                const monthData = modelData.monthlyData[i];
+                if (!monthData) continue;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${monthData.date}</td>
+                    <td>${formatNumber(Math.round(monthData.residentialSold))}</td>
+                    <td>${formatNumber(Math.round(monthData.commercialSold))}</td>
+                    <td>${formatNumber(Math.round(monthData.parkingSold))}</td>
+                    <td>${formatNumber(Math.round(monthData.totalRevenue))}</td>
+                    <td>${formatNumber(Math.round(monthData.escrowIn))}</td>
+                    <td>${formatNumber(Math.round(monthData.cumulativeRevenue))}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+        
+        // Обновление таблицы денежных потоков
+        function updateCashflowTable() {
+            const tbody = document.getElementById('cashflow-body');
+            tbody.innerHTML = '';
+            
+            // Показываем только каждый 3-й месяц для читаемости
+            for (let i = 0; i < modelData.monthlyData.length; i += 3) {
+                const monthData = modelData.monthlyData[i];
+                if (!monthData) continue;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${monthData.date}</td>
+                    <td>${formatNumber(Math.round(monthData.totalRevenue))}</td>
+                    <td>${formatNumber(Math.round(monthData.capexExpense))}</td>
+                    <td>${formatNumber(Math.round(monthData.interest))}</td>
+                    <td>${formatNumber(Math.round(monthData.tax))}</td>
+                    <td>${formatNumber(Math.round(monthData.operationalCashflow))}</td>
+                    <td>${formatNumber(Math.round(monthData.totalFinancing))}</td>
+                    <td>${formatNumber(Math.round(monthData.balance))}</td>
+                    <td>${formatNumber(Math.round(monthData.cashBalance))}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+        
+        // Обновление таблицы процентов
+        function updateInterestTable() {
+            const tbody = document.getElementById('interest-details-body');
+            tbody.innerHTML = '';
+            
+            // Показываем только каждый 6-й месяц для читаемости
+            for (let i = 0; i < modelData.monthlyData.length; i += 6) {
+                const monthData = modelData.monthlyData[i];
+                if (!monthData) continue;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${monthData.date}</td>
+                    <td>${formatNumber(Math.round(monthData.remainingDebt))}</td>
+                    <td>${formatNumber(Math.round(monthData.escrowBalance))}</td>
+                    <td>${formatNumber(Math.round(monthData.cumulativeRevenue * 0.5))}</td>
+                    <td>${monthData.coverageRatio.toFixed(2)}</td>
+                    <td>${monthData.interestRate.toFixed(2)}%</td>
+                    <td>${formatNumber(Math.round(monthData.interest))}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+        
+        // Обновление таблицы эскроу
+        function updateEscrowTable() {
+            const tbody = document.getElementById('escrow-body');
+            tbody.innerHTML = '';
+            
+            // Показываем только каждый 3-й месяц для читаемости
+            for (let i = 0; i < modelData.monthlyData.length; i += 3) {
+                const monthData = modelData.monthlyData[i];
+                if (!monthData) continue;
+                
+                const coveragePercent = monthData.remainingDebt > 0 ? 
+                    (monthData.escrowBalance / monthData.remainingDebt * 100).toFixed(1) : '0.0';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${monthData.date}</td>
+                    <td>${formatNumber(Math.round(monthData.escrowIn))}</td>
+                    <td>${formatNumber(Math.round(monthData.escrowBalance))}</td>
+                    <td>${coveragePercent}%</td>
+                    <td>${monthData.unlockDate}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+        
+        // Обновление графиков
+        function updateChartPlaceholders() {
+            // Структура выручки
+            const residentialPercent = (modelData.calculated.residentialRevenue / modelData.calculated.totalRevenue * 100).toFixed(1);
+            const commercialPercent = (modelData.calculated.commercialRevenue / modelData.calculated.totalRevenue * 100).toFixed(1);
+            const parkingPercent = (modelData.calculated.parkingRevenue / modelData.calculated.totalRevenue * 100).toFixed(1);
+            const storagePercent = (modelData.calculated.storageRevenue / modelData.calculated.totalRevenue * 100).toFixed(1);
+            
+            let revenueHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 10px; font-size: 14px;"><strong>Жилая недвижимость:</strong> ${residentialPercent}%</div>
+                    <div style="margin-bottom: 10px; font-size: 14px;"><strong>Коммерческая недвижимость:</strong> ${commercialPercent}%</div>
+                    <div style="margin-bottom: 10px; font-size: 14px;"><strong>Машино-места:</strong> ${parkingPercent}%</div>
+            `;
+            
+            if (storagePercent > 0) {
+                revenueHTML += `<div style="margin-bottom: 10px; font-size: 14px;"><strong>Кладовые:</strong> ${storagePercent}%</div>`;
+            }
+            
+            revenueHTML += `
+                    <div style="margin-top: 10px; font-size: 12px; color: #666;">Все объекты без НДС (льгота)</div>
+                </div>
+            `;
+            
+            document.getElementById('chart-revenue').innerHTML = revenueHTML;
+            
+            // Структура CAPEX
+            const landPercent = (modelData.calculated.landCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const constructionPercent = (modelData.calculated.constructionCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const designPercent = (modelData.calculated.designCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const networksPercent = (modelData.calculated.networksCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const technicalPercent = (modelData.calculated.technicalConditionsCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const improvementPercent = (modelData.calculated.improvementCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            const reservePercent = (modelData.calculated.reserveCost / modelData.calculated.totalCapex * 100).toFixed(1);
+            
+            document.getElementById('chart-capex').innerHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>Земля:</strong> ${landPercent}%</div>
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>СМР:</strong> ${constructionPercent}%</div>
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>ПИР:</strong> ${designPercent}%</div>
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>Сети:</strong> ${networksPercent}%</div>
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>ТУ:</strong> ${technicalPercent}%</div>
+                    <div style="margin-bottom: 8px; font-size: 13px;"><strong>Благоустр.:</strong> ${improvementPercent}%</div>
+                    <div style="font-size: 13px;"><strong>Резерв:</strong> ${reservePercent}%</div>
+                </div>
+            `;
+        }
+        
+        // Генерация таймлайна
+        function generateTimeline() {
+            const timeline = document.getElementById('timeline-visual');
+            timeline.innerHTML = '';
+            
+            const params = modelData.projectParams.dates;
+            const constructionMonths = modelData.projectParams.constructionMonths;
+            
+            // Создаем фазы
+            const startDate = new Date(params.start);
+            const constructionStart = new Date(params.constructionStart);
+            const operationStart = new Date(params.operationStart);
+            
+            // Расчет длительности в днях
+            const totalDays = (operationStart - startDate) / (1000 * 60 * 60 * 24) + 365; // + год на продажи
+            
+            const phases = [
+                { 
+                    name: "Подготовка", 
+                    class: "phase-preproject", 
+                    start: 0, 
+                    end: (constructionStart - startDate) / (1000 * 60 * 60 * 24) 
+                },
+                { 
+                    name: "Строительство", 
+                    class: "phase-construction", 
+                    start: (constructionStart - startDate) / (1000 * 60 * 60 * 24), 
+                    end: (operationStart - startDate) / (1000 * 60 * 60 * 24) 
+                },
+                { 
+                    name: "Продажи", 
+                    class: "phase-sales", 
+                    start: (constructionStart - startDate) / (1000 * 60 * 60 * 24), 
+                    end: totalDays 
+                }
+            ];
+            
+            phases.forEach(phase => {
+                const phaseStartPercent = (phase.start / totalDays) * 100;
+                const phaseEndPercent = (phase.end / totalDays) * 100;
+                const phaseWidth = phaseEndPercent - phaseStartPercent;
+                
+                if (phaseWidth > 0) {
+                    const phaseElement = document.createElement('div');
+                    phaseElement.className = `timeline-phase ${phase.class}`;
+                    phaseElement.style.width = `${phaseWidth}%`;
+                    phaseElement.style.marginLeft = `${phaseStartPercent}%`;
+                    phaseElement.textContent = phase.name;
+                    timeline.appendChild(phaseElement);
+                }
+            });
+            
+            // Добавляем маркеры
+            const markers = [
+                { name: "Старт проекта", date: params.start },
+                { name: "Начало стр-ва", date: params.constructionStart },
+                { name: "Ввод в экспл.", date: params.operationStart }
+            ];
+            
+            markers.forEach(marker => {
+                const markerDate = new Date(marker.date);
+                const positionPercent = ((markerDate - startDate) / (1000 * 60 * 60 * 24) / totalDays) * 100;
+                
+                const markerElement = document.createElement('div');
+                markerElement.className = 'timeline-marker';
+                markerElement.style.left = `${positionPercent}%`;
+                timeline.appendChild(markerElement);
+                
+                const label = document.createElement('div');
+                label.className = 'timeline-marker-label';
+                label.style.left = `${positionPercent}%`;
+                label.textContent = marker.name;
+                timeline.appendChild(label);
+            });
+        }
+        
+        // Сброс к значениям по умолчанию
+        function resetToDefaults() {
+            modelData.projectParams = {
+                costPerM2: 110,
+                equityPercent: 30,
+                keyRate: 10.0,
+                reservePercent: 5,
+                profitTaxRate: 25,
+                
+                residentialArea: 29846,
+                residentialPrice: 125,
+                
+                commercialArea: 6950,
+                commercialPrice: 90,
+                
+                parkingCount: 467,
+                parkingPrice: 400,
+                
+                storageCount: 0,
+                storagePrice: 0,
+                
+                dates: {
+                    start: '2025-10-01',
+                    constructionStart: '2026-02-01',
+                    operationStart: '2029-06-30'
+                },
+                
+                constructionMonths: 41,
+                
+                salesParams: {
+                    duringConstruction: 70,
+                    seasonality: 'medium',
+                    postConstructionPeriod: 24
+                }
+            };
+            
+            modelData.projectName = "Жилой комплекс";
+            modelData.projectDate = "2025-10-15";
+            
+            // Обновляем элементы управления
+            document.getElementById('project-name').value = modelData.projectName;
+            document.getElementById('project-date').value = modelData.projectDate;
+            
+            document.getElementById('equity-slider').value = 30;
+            document.getElementById('equity-input').value = 30;
+            document.getElementById('equity-value').textContent = '30%';
+            
+            document.getElementById('cost-per-m2').value = 110;
+            document.getElementById('cost-per-m2-value').textContent = '110';
+            
+            document.getElementById('reserve-slider').value = 5;
+            document.getElementById('reserve-value').textContent = '5%';
+            document.getElementById('reserve-percent-display').textContent = '5%';
+            
+            document.getElementById('residential-area').value = 29846;
+            document.getElementById('residential-price').value = 125;
+            document.getElementById('commercial-area').value = 6950;
+            document.getElementById('commercial-price').value = 90;
+            document.getElementById('parking-count').value = 467;
+            document.getElementById('parking-price').value = 400;
+            document.getElementById('storage-count').value = 0;
+            document.getElementById('storage-price').value = 0;
+            
+            document.getElementById('key-rate-slider').value = 10.0;
+            document.getElementById('key-rate-value').textContent = '10.0%';
+            
+            document.getElementById('profit-tax-slider').value = 25;
+            document.getElementById('profit-tax-value').textContent = '25%';
+            
+            document.getElementById('start-date').value = '2025-10-01';
+            document.getElementById('construction-start').value = '2026-02-01';
+            document.getElementById('operation-start').value = '2029-06-30';
+            
+            document.getElementById('construction-months-slider').value = 41;
+            document.getElementById('construction-months').textContent = '41';
+            
+            document.getElementById('sales-during-slider').value = 70;
+            document.getElementById('sales-during-value').textContent = '70%';
+            document.getElementById('sales-period').value = 24;
+            document.getElementById('sales-period-value').textContent = '24';
+            document.getElementById('seasonality').value = 'medium';
+            
+            setScenario('base');
+            
+            calculateConstructionMonths();
+            calculateModel();
+            updateUI();
+            generateTimeline();
+        }
+        
+        // Экспорт данных
+        function exportData() {
+            const data = {
+                projectName: modelData.projectName,
+                projectDate: modelData.projectDate,
+                projectParams: modelData.projectParams,
+                calculated: modelData.calculated,
+                currentScenario: modelData.currentScenario,
+                monthlyData: modelData.monthlyData
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `${modelData.projectName}-финансовая-модель-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert('Данные модели экспортированы в файл JSON');
+        }
+        
+        // Форматирование чисел
+        function formatNumber(num) {
+            return num.toLocaleString('ru-RU');
+        }
+    </script>
+</body>
+</html>
